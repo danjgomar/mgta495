@@ -1,0 +1,20 @@
+"0","# Load necessary libraries"
+"0","library(dplyr)     "
+"0","library(ggplot2)  "
+"0","library(foreign) "
+"0","library(MASS)"
+"0","library(tidyverse)"
+"0","library(knitr)"
+"0","library(kableExtra)"
+"2","
+Attaching package: ‘kableExtra’
+
+"
+"2","The following object is masked from ‘package:dplyr’:
+
+    group_rows
+
+"
+"0","# Read the Stata data file into R"
+"0",""
+"0","data <- read.dta(""karlan_list_2007.dta"")"

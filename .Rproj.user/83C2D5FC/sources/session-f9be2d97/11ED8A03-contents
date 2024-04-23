@@ -1,0 +1,12 @@
+---
+  title: "Daniel Gomar"
+  image: "profile_pic.jpg"
+  about:
+    template: jolla
+    links:
+      - icon: envelope
+        href: mailto:dgomar@ucsd.edu
+      - icon: linkedin
+        ##href: https://linkedin.com/in/daniel-gomar
+---
+

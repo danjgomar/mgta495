@@ -1,0 +1,15 @@
+{
+  "hash": "5013526ab1869353123dd534546a14be",
+  "result": {
+    "engine": "knitr",
+    "markdown": "---\n  title: \"Daniel Gomar\"\n  image: \"profile_pic.jpg\"\n  about:\n    template: jolla\n    links:\n      - icon: envelope\n        href: mailto:dgomar@ucsd.edu\n      - icon: linkedin\n        ##href: https://\n---\n\n\n##This is a Quarto website.\n\nTo learn more about Quarto websites visit <https://quarto.org/docs/websites>.\n\n\n::: {.cell}\n\n```{.r .cell-code}\n1 + 1\n```\n\n::: {.cell-output .cell-output-stdout}\n\n```\n[1] 2\n```\n\n\n:::\n:::\n",
+    "supporting": [],
+    "filters": [
+      "rmarkdown/pagebreak.lua"
+    ],
+    "includes": {},
+    "engineDependencies": {},
+    "preserve": {},
+    "postProcess": true
+  }
+}

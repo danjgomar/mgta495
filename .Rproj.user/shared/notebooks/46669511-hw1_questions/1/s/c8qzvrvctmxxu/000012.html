@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<style>body{background-color:white;}</style>
+<script src="lib/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link href="lib/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<script src="lib/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="lib/bootstrap-3.3.5/shim/respond.min.js"></script>
+<style>h1 {font-size: 34px;}
+       h1.title {font-size: 38px;}
+       h2 {font-size: 30px;}
+       h3 {font-size: 24px;}
+       h4 {font-size: 18px;}
+       h5 {font-size: 16px;}
+       h6 {font-size: 12px;}
+       code {color: inherit; background-color: rgba(0, 0, 0, 0.04);}
+       pre:not([class]) { background-color: white }</style>
+<script src="lib/kePrint-0.0.1/kePrint.js"></script>
+<link href="lib/lightable-0.0.1/lightable.css" rel="stylesheet" />
+
+</head>
+<body>
+<table class="table table-striped table-hover table-condensed" style="width: auto !important; margin-left: auto; margin-right: auto;">
+<caption>Balance Test Results</caption>
+ <thead>
+  <tr>
+   <th style="text-align:left;"> Variable </th>
+   <th style="text-align:right;"> T_Test_P_Value </th>
+   <th style="text-align:right;"> Reg_Coefficient </th>
+   <th style="text-align:right;"> Reg_P_Value </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> female </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0795234 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> -0.0075469 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0786910 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> couple </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.5603971 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> -0.0016169 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.5593646 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> dormant </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.8619611 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0008233 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.8619565 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> nonlit </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0881714 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0317896 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0888347 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> cases </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.7329228 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> -0.0037492 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.7332787 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> statecnt </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.8678500 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0090492 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.8680680 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> stateresponse </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.8951345 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0000065 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.8951398 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> red0 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0604882 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0087268 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0607864 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> blue0 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0604882 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> -0.0087268 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0607864 </td>
+  </tr>
+  <tr>
+   <td style="text-align:left;font-weight: bold;color: blue !important;"> redcty </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.3659315 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.0042892 </td>
+   <td style="text-align:right;background-color: rgba(247, 247, 247, 255) !important;"> 0.3659008 </td>
+  </tr>
+</tbody>
+</table> <script type="text/x-mathjax-config">MathJax.Hub.Config({tex2jax: {inlineMath: [["$","$"]]}})</script><script async src="https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+</body>
+</html>
