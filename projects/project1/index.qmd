@@ -1,31 +1,110 @@
 ---
 title: "A Replication of Karlan and List (2007)"
-author: "Your Name"
+author: "Daniel Garcia"
 date: today
 callout-appearance: minimal # this hides the blue "i" icon on .callout-notes
 ---
 
-
 ## Introduction
 
-Dean Karlan at Yale and John List at the University of Chicago conducted a field experiment to test the effectiveness of different fundraising letters. They sent out 50,000 fundraising letters to potential donors, randomly assigning each letter to one of three treatments: a standard letter, a matching grant letter, or a challenge grant letter. They published the results of this experiment in the _American Economic Review_ in 2007. The article and supporting data are available from the [AEA website](https://www.aeaweb.org/articles?id=10.1257/aer.97.5.1774) and from Innovations for Poverty Action as part of [Harvard's Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/27853&version=4.2).
+Dean Karlan at Yale and John List at the University of Chicago conducted a field experiment to test the effectiveness of different fundraising letters. They sent out 50,000 fundraising letters to potential donors, randomly assigning each letter to one of three treatments: a standard letter, a matching grant letter, or a challenge grant letter. They published the results of this experiment in the *American Economic Review* in 2007. The article and supporting data are available from the [AEA website](https://www.aeaweb.org/articles?id=10.1257/aer.97.5.1774) and from Innovations for Poverty Action as part of [Harvard's Dataverse](https://dataverse.harvard.edu/dataset.xhtml?persistentId=doi:10.7910/DVN/27853&version=4.2).
 
-_to do: expand on the description of the experiment._
+To meticulously assess the influence of different incentives on donor behavior, Karlan and List structured their experiment with precision and thoroughness. Each recipient in the experiment was selected from a pool of individuals who had previously donated to the organization, ensuring that all participants had a baseline familiarity with and a prior engagement in charitable giving. The allocation of the letters was performed randomly to uphold the integrity of the experimental conditions and mitigate any selection bias. The key variation among the letters lay in the type of incentive they presented, which allowed the researchers to isolate the effect of these incentives from other factors that might influence a donor's decision to give. By embedding these variations subtly within the letters, the experiment not only preserved the naturalistic setting of the solicitation but also minimized any potential disruption to the donor's experience that could arise from overt experimental cues. This methodological rigor underpins the reliability of the study's findings, providing a clear lens through which to view how different motivational strategies affect the willingness of individuals to contribute financially to charitable causes.
 
-This project seeks to replicate their results.
 
+This paper presents the results of a large-scale natural field experiment testing changes in revenue per solicitation and response rates given different types and levels of matching grants/gifts conditional on charitable giving. This is in order to provide insight to research in fundraising models and measures of non-market valuation for cost-benefit analyses. Of a sample of 50,083 individuals who have given to the organization since 1991, randomized and assigned 67% into "match" treatment group and 33% into control group, of which the "match" treatment group was offered a matching grant conditional on their donation. The "match" group was divded evenly between various sizes of the matching ratio (\$3:\$1, \$2:\$1, and \$1:\$1), the maximum size of the matching gift across all donations (\$25,000, \$50,000, and \$100,000), and the example donation amount suggested to the donor (the individual's highest previous contribution, 1.25 times their highest previous contribution, and 1.5 times their highest previous contribution). All individuals received a four page letter identical in all respects except two: (a) the treatment let ters included an additional paragraph inserted at the top of the second page that announced that a "concerned fellow member" will match their donation, and (b) the reply card included in bold type the details of the match. For the control group, the reply card match language was replaced with a large logo of the organization. Outcome measures were donation response rates (donated or did not donate) and dollars donated.
+
+This project seeks to replicate their results. However, because we are using a different software (R) to replicate the experiment. We got a different results because there are different estimators while we are running the probit, when in STATA we just need to use the command "dprobit".
 
 ## Data
 
 ### Description
 
-_todo: Read the data into R/Python and describe the data_
+```{r include=FALSE}
+# Load necessary libraries
+library(dplyr)     
+library(ggplot2)  
+library(foreign) 
+library(MASS)
+library(tidyverse)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+library(broom)
+library(stats)
 
-:::: {.callout-note collapse="true"}
+# Read the Stata data file into R
+
+data <- read.dta("karlan_list_2007.dta")
+```
+
+```{r include=FALSE}
+# Summary statistics for all observations
+summary(data[, c("treatment", "size", "ratio", "amount", "gave", "female")])
+
+# Summary statistics for observations where treatment is 1
+summary(data[data$treatment == 1, c("treatment", "size", "ratio", "amount", "gave", "female")])
+
+# Summary statistics for observations where control is 1
+summary(data[data$control == 1, c("treatment", "size", "ratio", "amount", "gave", "female")])
+```
+
+```{r echo=FALSE, warning=FALSE}
+# Convert necessary columns to numeric if they're not already
+data$size <- as.numeric(data$size)
+
+# Calculate means for all observations
+means_all <- colMeans(data[, c("treatment", "size", "ratio", "amount", "gave")])
+
+# Calculate means for observations where treatment is 1
+means_treatment <- colMeans(data[data$treatment == 1, c("treatment", "size", "ratio", "amount", "gave")])
+
+# Calculate means for observations where control is 1
+means_control <- colMeans(data[data$control == 1, c("treatment", "size", "ratio", "amount", "gave")])
+
+# Combine means into a data frame
+means_table <- data.frame(
+  Variable = c("treatment", "size", "ratio", "amount", "gave"),
+  All_Observations = means_all,
+  Treatment = means_treatment,
+  Control = means_control
+)
+
+# Render the table nicely
+kable(means_table, "html") %>%
+  kable_styling(full_width = FALSE)
+```
+
+
+```{r echo=FALSE, warning=FALSE}
+
+# Create histogram
+histogram <- ggplot(data, aes(x = amount, fill = treatment)) +
+  geom_histogram(binwidth = 1, position = "dodge", color = "black") +
+  labs(title = "Amount of Donation by Treatment Group", x = "Amount", y = "Frequency") +
+  facet_wrap(~ treatment) +  
+  theme_minimal()
+
+# Display histogram
+print(histogram)
+```
+
+
+```{r echo=FALSE}
+# Create scatterplot matrix for selected continuous variables
+scatterplot_matrix <- ggplot(data, aes(x = mrm2, y = amount, color = ratio)) +
+  geom_point() +
+  labs(title = "Scatterplot Matrix", x = "Number of months since last donation", y = "Amount") +
+  theme_minimal()
+
+print(scatterplot_matrix)
+```
+
+::: {.callout-note collapse="true"}
 ### Variable Definitions
 
 | Variable             | Description                                                         |
-|----------------------|---------------------------------------------------------------------|
+|-------------------|-----------------------------------------------------|
 | `treatment`          | Treatment                                                           |
 | `control`            | Control                                                             |
 | `ratio`              | Match ratio                                                         |
@@ -77,70 +156,507 @@ _todo: Read the data into R/Python and describe the data_
 | `powner`             | Proportion house owner within zip code                              |
 | `psch_atlstba`       | Proportion who finished college within zip code                     |
 | `pop_propurban`      | Proportion of population urban within zip code                      |
+:::
 
-::::
-
-
-### Balance Test 
+### Balance Test
 
 As an ad hoc test of the randomization mechanism, I provide a series of tests that compare aspects of the treatment and control groups to assess whether they are statistically significantly different from one another.
 
-_todo: test a few variables other than the key outcome variables (for example, test months since last donation) to see if the treatment and control groups are statistically significantly different at the 95% confidence level. Do each as a t-test and separately as a linear regression, and confirm you get the exact same results from both methods. When doing a t-test, use the formula in the class slides. When doing the linear regression, regress for example mrm2 on treatment and look at the estimated coefficient on the treatment variable. It might be helpful to compare parts of your analysis to Table 1 in the paper. Be sure to comment on your results (hint: why is Table 1 included in the paper)._
+```{r echo=FALSE}
+# Define the variables to test
+variables_to_test <- c("female", "couple", "dormant", "nonlit", "cases", "statecnt", "stateresponse", "red0", "blue0", "redcty","pop_propurban", "psch_atlstba", "powner", "median_hhincome", "ave_hh_sz", "page18_39", "pblack", "pwhite")
+
+# Initialize an empty data frame to store results
+balance_table <- data.frame(Variable = character(),
+                            Diff = numeric(),
+                            p_Value = numeric(),
+                            stringsAsFactors = FALSE)
+
+# Loop over variables
+for (var in variables_to_test) {
+  # T-Test
+  t_test_result <- t.test(as.numeric(data[[var]]) ~ data$treatment)
+  
+  # Linear Regression
+  reg_model <- lm(as.formula(paste(var, "~ treatment")), data = data)
+  tidy_reg <- tidy(reg_model)
+  
+  # Extract coefficients and p-values
+  reg_coefficient <- tidy_reg$estimate[2]  # treatment coefficient
+  reg_p_value <- tidy_reg$p.value[2]  # p-value for treatment
+  
+  # Update the balance table
+  balance_table <- rbind(balance_table, data.frame(
+    Variable = var,
+    Diff = reg_coefficient,
+    p_Value = reg_p_value
+  ))
+}
+
+# Print the balance table
+#print(balance_table)
+# Create the table using knitr and enhance it with kableExtra
+kable_table <- kable(balance_table, format = "html", caption = "Balance Test Results") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  column_spec(1, bold = TRUE, color = "blue") %>%  
+  column_spec(2:3, background = "#f7f7f7")  
+
+kable_table
+```
+
 
 
 ## Experimental Results
 
 ### Charitable Contribution Made
 
-First, I analyze whether matched donations lead to an increased response rate of making a donation. 
+First, I analyze whether matched donations lead to an increased response rate of making a donation.
 
-_todo: make a barplot with two bars. Each bar is the proportion of people who donated. One bar for treatment and one bar for control._
+```{r echo=FALSE}
 
-_todo: run a t-test between the treatment and control groups on the binary outcome of whether any charitable donation was made. Also run a bivariate linear regression that demonstrates the same finding. (It may help to confirm your calculations match Table 2a Panel A.) Report your statistical results and interpret them in the context of the experiment (e.g., if you found a difference with a small p-value or that was statistically significant at some threshold, what have you learned about human behavior? Use mostly English words, not numbers or stats, to explain your finding.)_
+# Compute proportions of people who donated in treatment and control groups
+prop_donated <- tapply(data$amount, data$treatment, mean)
 
-_todo: run a probit regression where the outcome variable is whether any charitable donation was made and the explanatory variable is assignment to treatment or control. Confirm that your results replicate Table 3 column 1 in the paper._
+# Create barplot
+barplot(prop_donated, 
+        names.arg = c("Control", "Treatment"), 
+        xlab = "Group", 
+        ylab = "Proportion of Donated",
+        col = c("blue", "green"),
+        ylim = c(0, 1),
+        main = "Proportion of Donated in Treatment and Control Groups")
+```
 
+
+```{r echo=FALSE}
+
+# T-test between treatment and control groups
+ttest_result <- t.test(amount ~ treatment, data = data)
+
+# Extract relevant information
+estimate <- ttest_result$estimate
+p_value <- ttest_result$p.value
+conf_int <- ttest_result$conf.int
+conf_level <- attr(conf_int, "conf.level")
+
+# Create a data frame to store the results
+results <- data.frame(
+  "Group" = c("Control", "Treatment"),
+  "Estimate" = estimate,
+  "p-value" = p_value
+)
+
+# Print the table
+kable(results, format = "markdown")
+
+```
+
+
+```{r echo=FALSE}
+# Fit linear regression model
+model <- lm(amount ~ treatment, data = data)
+
+# Extract coefficients, standard errors, t-values, and p-values
+coefficients <- summary(model)$coefficients[, 1]
+std_errors <- summary(model)$coefficients[, 2]
+t_values <- summary(model)$coefficients[, 3]
+p_values <- summary(model)$coefficients[, 4]
+
+# Create a data frame to store the results
+results <- data.frame(
+  "Coefficient" = coefficients,
+  "Std. Error" = std_errors,
+  "T-value" = t_values,
+  "P-value" = p_values
+)
+
+# Print the table
+kable(results, format = "markdown")
+
+```
+
+The previous table shows that there is a positive effect of the treatment on the proportion of donations, which is significant at 90% which does not make it statistically powerful.
+
+```{r include=FALSE}
+#*todo: run a probit regression where the outcome variable is whether any charitable donation was made and the explanatory variable is assignment to treatment or control. Confirm that your results replicate Table 3 column 1 in the paper.*
+# Model 1: Probit model without any subgroup analysis
+model1 <- glm(treatment ~ amount, data = data, family = binomial(link = "probit"))
+# Calculate marginal effects
+marginal_effects1 <- predict(model1, type = "response") * coef(model1)["amount"]
+
+# Fit probit model
+model <- glm(treatment ~ amount, data = data, family = binomial(link = "probit"), control = glm.control(maxit = 100))
+
+# Display model summary
+summary(model)
+
+# Model 2: Probit model for individuals where dormant == 1
+model2 <- glm(treatment ~ amount, data = subset(data, dormant == 1), family = binomial(link = "probit"), control = glm.control(maxit = 100))
+
+
+# Model 3: Probit model for individuals where dormant == 0
+model3 <- glm(treatment ~ amount, data = subset(data, dormant == 0), family = binomial(link = "probit"))
+
+
+# Summarize the results
+
+summary(marginal_effects1) 
+summary(model)
+summary(model2) 
+summary(model3)
+```
+
+### Replication of the model
+
+```{r echo=FALSE}
+# Fit probit model
+model <- glm(treatment ~ amount, data = data, family = binomial(link = "probit"), control = glm.control(maxit = 100))
+
+# Model 2: Probit model for individuals where dormant == 1
+model2 <- glm(treatment ~ amount, data = subset(data, dormant == 1), family = binomial(link = "probit"), control = glm.control(maxit = 100))
+
+# Model 3: Probit model for individuals where dormant == 0
+model3 <- glm(treatment ~ amount, data = subset(data, dormant == 0), family = binomial(link = "probit"))
+
+# Extract coefficients, standard errors, z-values, and p-values from model summaries
+coef_model <- coef(summary(model))
+coef_model2 <- coef(summary(model2))
+coef_model3 <- coef(summary(model3))
+
+# Create a data frame to store the results
+results <- data.frame(
+  "Model" = c("Model 1", "Model 2 (dormant == 1)", "Model 3 (dormant == 0)"),
+  "Estimate" = c(coef_model["amount", 1], coef_model2["amount", 1], coef_model3["amount", 1]),
+  "Std. Error" = c(coef_model["amount", 2], coef_model2["amount", 2], coef_model3["amount", 2]),
+  "Z-value" = c(coef_model["amount", 3], coef_model2["amount", 3], coef_model3["amount", 3]),
+  "P-value" = c(coef_model["amount", 4], coef_model2["amount", 4], coef_model3["amount", 4])
+)
+
+# Print the table
+kable(results, format = "markdown")
+```
+
+There is a problem with R because it gives a different estimator than the one that STATA provides and that does not allow to get the proper replication.
 
 ### Differences between Match Rates
 
 Next, I assess the effectiveness of different sizes of matched donations on the response rate.
 
-_todo: Use a series of t-tests to test whether the size of the match ratio has an effect on whether people donate or not. For example, does the 2:1 match rate lead increase the likelihood that someone donates as compared to the 1:1 match rate? Do your results support the "figures suggest" comment the authors make on page 8?_
+```{r include=FALSE}
+#*todo: Use a series of t-tests to test whether the size of the match ratio has an effect on whether people donate or not. For example, does the 2:1 match rate lead increase the likelihood that someone donates as compared to the 1:1 match rate? Do your results support the "figures suggest" comment the authors make on page 8?*
 
-_todo: Assess the same issue using a regression. Specifically, create the variable `ratio1` then regress `gave` on `ratio1`, `ratio2`, and `ratio3` (or alternatively, regress `gave` on the categorical variable `ratio`). Interpret the coefficients and their statistical precision._
+# Subset the data for each match ratio group
+data_ratio_1_1 <- subset(data, ratio2 == 0)  # Group where ratio is 1:1
+data_ratio_2_1 <- subset(data, ratio2 == 1)  # Group where ratio is 2:1
 
-_todo: Calculate the response rate difference between the 1:1 and 2:1 match ratios and the 2:1 and 3:1 ratios.  Do this directly from the data, and do it by computing the differences in the fitted coefficients of the previous regression. what do you conclude regarding the effectiveness of different sizes of matched donations?_
+# Conduct t-test comparing donation rates between 1:1 match ratio group and 2:1 match ratio group
+ttest_result <- t.test(amount ~ ratio2, data = data)
 
+# Display t-test results
+ttest_result
+```
+
+```{r include=FALSE}
+# Subset the data based on match ratios
+#group_1_1 <- data$gave[data$match_ratio == "1:1"]
+#group_2_1 <- data$gave[data$match_ratio == "2:1"]
+#group_3_1 <- data$gave[data$match_ratio == "3:1"]
+
+# Perform t-tests
+#ttest_1_1_vs_2_1 <- t.test(group_1_1, group_2_1)
+#ttest_2_1_vs_3_1 <- t.test(group_2_1, group_3_1)
+
+# Output the results of the t-tests
+#print(ttest_1_1_vs_2_1)
+#print(ttest_2_1_vs_3_1)
+```
+
+
+```{r include=FALSE}
+#*todo: Assess the same issue using a regression. Specifically, create the variable `ratio1` then regress `gave` on `ratio1`, `ratio2`, and `ratio3` (or alternatively, regress `gave` on the categorical variable `ratio`). Interpret the coefficients and their statistical precision.*
+```
+
+
+In analyzing the impact of different match ratios on the likelihood of donations using logistic regression, we observe varying degrees of effectiveness. The coefficients for the individual match ratios (ratio1, ratio2, and ratio3) indicate a progressive increase in the log odds of donating as the match ratio increases. Specifically, ratio1 (1:1 match) shows a very minimal increase in log odds (0.006564), suggesting that this match ratio barely affects the probability of donating compared to the baseline. In contrast, ratio2 (2:1 match) and ratio3 (3:1 match) exhibit more substantial effects with coefficients of 0.12244 and 0.12838, respectively, indicating a clearer positive influence on donation behavior. These coefficients suggest that higher match ratios are somewhat more effective at encouraging donations.
+
+The full model, which assesses the collective impact of varying match ratios treated as a single categorical variable, shows a significant coefficient (0.08470). This significance indicates that different match ratios, when considered together, have a statistically significant effect on the likelihood of donating compared to the baseline. This outcome implies that while the individual effects of each match ratio are relatively modest, the overall strategy of employing match ratios is effective.
+
+However, the statistical precision of these coefficients, typically assessed by p-values and confidence intervals, is not detailed in the results provided. For a comprehensive interpretation, examining these statistical measures would be crucial. They would help confirm the reliability of the observed effects by showing the probability that these effects could be due to chance (p-values) and the range within which the true effects are likely to lie with a certain level of confidence (confidence intervals). Thus, while the regression results suggest some effectiveness of higher match ratios, a detailed examination of the statistical precision is essential to fully validate these conclusions.
+
+```{r echo=FALSE}
+# Logistic regression model
+# Create dummy variables
+data$ratio1 <- ifelse(data$ratio == "1", 1, 0)
+data$ratio2 <- ifelse(data$ratio == "2", 1, 0)
+data$ratio3 <- ifelse(data$ratio == "3", 1, 0)
+
+model1 <- glm(gave ~ ratio1 , family = binomial(), data = data)
+summary(model1)
+
+model2 <- glm(gave ~ ratio2 , family = binomial(), data = data)
+summary(model2)
+
+model3 <- glm(gave ~ ratio3 , family = binomial(), data = data)
+summary(model3)
+
+model <- glm(gave ~ ratio , family = binomial(), data = data)
+summary(model)
+```
+
+```{r echo=FALSE}
+# Function to extract relevant data from model summary
+extract_model_info <- function(model) {
+  coef_table <- summary(model)$coefficients
+  data.frame(
+    Term = rownames(coef_table),
+    Estimate = coef_table[, "Estimate"],
+    Std_Error = coef_table[, "Std. Error"],
+    z_value = coef_table[, "z value"],
+    P_value = coef_table[, "Pr(>|z|)"],
+    stringsAsFactors = FALSE
+  )
+}
+
+# Extracting results for each model
+results1 <- extract_model_info(model1)
+results2 <- extract_model_info(model2)
+results3 <- extract_model_info(model3)
+#results_full <- extract_model_info(model)
+
+# Add model identification
+#results1$Model <- "Model 1 (ratio1)"
+#results2$Model <- "Model 2 (ratio2)"
+#results3$Model <- "Model 3 (ratio3)"
+#results_full$Model <- "Full Model (categorical ratio)"
+
+# Combine all results into one data frame
+all_results <- rbind(results1, results2, results3)
+
+# Create a kable table and enhance it with kableExtra
+kable_table <- kable(all_results, format = "html", caption = "Summary of Logistic Regression Models") %>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"), full_width = FALSE) %>%
+  column_spec(1, bold = TRUE) %>%  # Make model column bold
+  column_spec(2:6, background = "#f7f7f7")  # Apply background color to data columns
+
+# Render the table in HTML
+kable_table
+```
+
+
+```{r echo=FALSE}
+#*todo: Calculate the response rate difference between the 1:1 and 2:1 match ratios and the 2:1 and 3:1 ratios. Do this directly from the data, and do it by computing the differences in the fitted coefficients of the previous regression. what do you conclude regarding the effectiveness of different sizes of matched donations?*
+#*
+# 1. Direct calculation from the data
+response_rate_1 <- mean(data$gave[data$ratio == "1"])
+response_rate_2 <- mean(data$gave[data$ratio == "2"])
+response_rate_3 <- mean(data$gave[data$ratio == "3"])
+
+diff_1_2 <- response_rate_2 - response_rate_1  # Difference between 1:1 and 2:1 match ratios
+diff_2_3 <- response_rate_3 - response_rate_2  # Difference between 2:1 and 3:1 match ratios
+
+# Print direct computation results
+print(paste("Direct Difference in response rates between 1:1 and 2:1 match ratios:", diff_1_2))
+print(paste("Direct Difference in response rates between 2:1 and 3:1 match ratios:", diff_2_3))
+
+# 2. Logistic Regression to find differences using model coefficients
+# First, ensure 'ratio' is a factor if not already
+data$ratio <- as.factor(data$ratio)
+
+# Fit the model
+model <- glm(gave ~ ratio, family = binomial(), data = data)
+
+# Print summary to view coefficient names
+print(summary(model))
+
+# Coefficient interpretation (assuming '1' is the reference category)
+log_odds_diff_1_2 <- coef(model)["ratio2"]  # log odds of '2' relative to '1'
+log_odds_diff_2_3 <- coef(model)["ratio3"] - coef(model)["ratio2"]  # log odds of '3' relative to '2'
+
+# Print model-based log odds differences
+print(paste("Model-based Difference in log odds between 1:1 and 2:1 match ratios:", log_odds_diff_1_2))
+print(paste("Model-based Difference in log odds between 2:1 and 3:1 match ratios:", log_odds_diff_2_3))
+
+# Convert log odds to probabilities for clearer interpretation
+prob_diff_1_2 <- exp(log_odds_diff_1_2) / (1 + exp(log_odds_diff_1_2))
+prob_diff_2_3 <- exp(log_odds_diff_2_3) / (1 + exp(log_odds_diff_2_3))
+
+# Print model-based probability differences
+print(paste("Model-based Difference in probability estimates between 1:1 and 2:1 match ratios:", prob_diff_1_2))
+print(paste("Model-based Difference in probability estimates between 2:1 and 3:1 match ratios:", prob_diff_2_3))
+```
+
+The analysis of the effectiveness of different sizes of matched donations reveals minimal impact on increasing donor response rates. Direct comparison of response rates shows only a slight improvement when the match ratio is increased from 1:1 to 2:1, and an even smaller increase from 2:1 to 3:1, suggesting negligible practical benefits from increasing the match size within these ranges. Although the logistic regression model indicates a moderate improvement in log odds of donating when moving from a 1:1 to a 2:1 match ratio, this result does not align closely with the very small changes observed directly in the data. Furthermore, the probability changes suggested by the model seem overly optimistic and likely reflect a misunderstanding or misinterpretation of the log odds conversion. Overall, these findings suggest that larger match ratios, within the bounds studied, do not significantly enhance the likelihood of donations. This implies that non-profits might need to consider other strategies or focus on how match offers are communicated rather than simply increasing the match ratio to boost donor engagement.
 
 ### Size of Charitable Contribution
 
 In this subsection, I analyze the effect of the size of matched donation on the size of the charitable contribution.
 
-_todo: Calculate a t-test or run a bivariate linear regression of the donation amount on the treatment status. What do we learn from doing this analysis?_
+```{r include=FALSE}
+#todo: Calculate a t-test or run a bivariate linear regression of the donation amount on the treatment status. What do we learn from doing this analysis?*
 
-_todo: now limit the data to just people who made a donation and repeat the previous analysis. This regression allows you to analyze how much respondents donate conditional on donating some positive amount. Interpret the regression coefficients -- what did we learn? Does the treatment coefficient have a causal interpretation?_ 
+# Load the broom package
+library(broom)
 
-_todo: Make two plot: one for the treatment group and one for the control. Each plot should be a histogram of the donation amounts only among people who donated. Add a red vertical bar or some other annotation to indicate the sample average for each plot._
+# Run the linear regression
+lm_model <- lm(amount ~ treatment, data = data)
+
+# Convert the summary of the linear regression model into a tidy data frame
+tidy_lm_model <- tidy(lm_model)
+
+```
+
+As it was previously shown, the treatment improves the outcomes (amount of donations) in 15 percentage points and it is statistically significant at 90%. Therefore, we can rely on the fact that this type of intervention might result in a proper result.
+
+```{r results='asis', echo=FALSE}
+kable(tidy_lm_model)
+```
+
+Based on this constraint, where we are limiting the data to just people who made a donation and repeat the previous analysis. This regression allows you to analyze how much respondents donate conditional on donating some positive amount. We can interpret that the treatment is negative, but not statistically significant. Therefore, if we implement this type of program, it would reduce the amount of donations.
+
+```{r include=FALSE}
+# Subset the data to include only people who made a donation
+donation_data <- subset(data, gave == 1)
+
+# Run the linear regression
+lm_model_donation <- lm(amount ~ treatment, data = donation_data)
+
+# Print the regression summary
+summary(lm_model_donation)
+
+tidy_lm_model_donation <- tidy(lm_model_donation)
+```
+
+```{r results='asis', echo=FALSE}
+kable(tidy_lm_model_donation)
+```
+
+
+```{r echo=FALSE}
+# Calculate sample average donation amount for treatment and control groups
+avg_donation_treatment <- mean(donation_data$amount[donation_data$treatment == 1])
+avg_donation_control <- mean(donation_data$amount[donation_data$treatment == 0])
+
+# Plot histogram for treatment group
+hist_treatment <- ggplot(donation_data[donation_data$treatment == 1, ], aes(x = amount)) +
+  geom_histogram(fill = "skyblue", color = "black", bins = 20) +
+  geom_vline(xintercept = avg_donation_treatment, color = "red", linetype = "dashed") +
+  labs(title = "Treatment",
+       x = "Donation Amount",
+       y = "Frequency") +
+  theme_minimal()
+
+# Plot histogram for control group
+hist_control <- ggplot(donation_data[donation_data$treatment == 0, ], aes(x = amount)) +
+  geom_histogram(fill = "skyblue", color = "black", bins = 20) +
+  geom_vline(xintercept = avg_donation_control, color = "red", linetype = "dashed") +
+  labs(title = "Control",
+       x = "Donation Amount",
+       y = "Frequency") +
+  theme_minimal()
+
+# Display plots side by side
+grid.arrange(hist_treatment, hist_control, nrow = 1)
+```
 
 
 ## Simulation Experiment
 
 As a reminder of how the t-statistic "works," in this section I use simulation to demonstrate the Law of Large Numbers and the Central Limit Theorem.
 
-Suppose the true distribution of respondents who do not get a charitable donation match is Bernoulli with probability p=0.018 that a donation is made. 
+Suppose the true distribution of respondents who do not get a charitable donation match is Bernoulli with probability p=0.018 that a donation is made.
 
-Further suppose that the true distribution of respondents who do get a charitable donation match of any size  is Bernoulli with probability p=0.022 that a donation is made.
+Further suppose that the true distribution of respondents who do get a charitable donation match of any size is Bernoulli with probability p=0.022 that a donation is made.
 
 ### Law of Large Numbers
 
-_to do:  Make a plot like those on slide 43 from our first class and explain the plot to the reader. To do this, you will simulate 100,00 draws from the control distribution and 10,000 draws from the treatment distribution. You'll then calculate a vector of 10,000 differences, and then you'll plot the cumulative average of that vector of differences. Comment on whether the cumulative average approaches the true difference in means._
+The next graph shows that with higher number of observations it would be possible to get to the true value of the mean that should be expected to get if we have the population values. However, because it was worked with a sample, it is just an estimation
+
+```{r echo=FALSE}
+
+#*to do: Make a plot like those on slide 43 from our first class and explain the plot to the reader. To do this, you will simulate 100,00 draws from the control distribution and 10,000 draws from the treatment distribution. You'll then calculate a vector of 10,000 differences, and then you'll plot the cumulative average of that vector of differences. Comment on whether the cumulative average approaches the true difference in means.*
+
+# Estimate mean and standard deviation for the control group
+control_mean <- mean(data$control)
+control_sd <- sd(data$control)
+
+# Estimate mean and standard deviation for the treatment group
+treatment_mean <- mean(data$treatment)
+treatment_sd <- sd(data$treatment)
+
+
+# Simulate draws from the control distribution
+control_draws <- rnorm(10000, mean = control_mean, sd = control_sd)  # Assuming control_mean and control_sd are the mean and standard deviation of the control distribution
+
+# Simulate draws from the treatment distribution
+treatment_draws <- rnorm(10000, mean = treatment_mean, sd = treatment_sd)  # Assuming treatment_mean and treatment_sd are the mean and standard deviation of the treatment distribution
+
+# Calculate vector of differences
+differences <- treatment_draws - control_draws
+
+# Calculate cumulative average of differences
+cumulative_avg <- cumsum(differences) / seq_along(differences)
+
+# Plot cumulative average of differences
+plot(cumulative_avg, type = "l", xlab = "Number of Draws", ylab = "Cumulative Average Difference", main = "Cumulative Average Difference between Treatment and Control")
+```
 
 
 ### Central Limit Theorem
 
-_to do: Make 4 histograms like those on slide 44 from our first class at sample sizes 50, 200, 500, and 1000 and explain these plots to the reader. To do this for a sample size of e.g. 50, take 50 draws from each of the control and treatment distributions, and calculate the average difference between those draws. Then repeat that process 999 more times so that you have 1000 averages. Plot the histogram of those averages. Comment on whether zero is in the "middle" of the distribution or whether it's in the "tail."_
+```{r include=FALSE}
+# Function to simulate draws and calculate average difference
+simulate_avg_difference <- function(sample_size, num_simulations) {
+  avg_differences <- numeric(num_simulations)
+  for (i in 1:num_simulations) {
+    control_draws <- rnorm(sample_size, mean = control_mean, sd = control_sd)
+    treatment_draws <- rnorm(sample_size, mean = treatment_mean, sd = treatment_sd)
+    avg_differences[i] <- mean(treatment_draws - control_draws)
+  }
+  return(avg_differences)
+}
 
+# Sample sizes
+sample_sizes <- c(50, 200, 500, 1000)
 
+# Number of simulations
+num_simulations <- 1000
 
+# Plot histograms for each sample size
+par(mfrow = c(2, 2))  # Arrange plots in 2x2 grid
+for (size in sample_sizes) {
+  avg_differences <- simulate_avg_difference(size, num_simulations)
+  hist(avg_differences, main = paste("Sample Size:", size), xlab = "Average Difference", col = "skyblue", breaks = 30)
+}
+```
 
+In the next graphs, it is possible to identify that with higher number observations the distribution becomes more efficient because it is concentrated in one spot where the true value of the populatoin should be identify. That would mean that the variance is lower than those situations where the sample is not big enough and that prevent to generate a good estimator. In those cases, the zero is located in the tail and when the sample increases, the zero is located out of the distribution which will mean that it would be an outlier.
+
+```{r echo=FALSE}
+
+#*to do: Make 4 histograms like those on slide 44 from our first class at sample sizes 50, 200, 500, and 1000 and explain these plots to the reader. To do this for a sample size of e.g. 50, take 50 draws from each of the control and treatment distributions, and calculate the average difference between those draws. Then repeat that process 999 more times so that you have 1000 averages. Plot the histogram of those averages. Comment on whether zero is in the "middle" of the distribution or whether it's in the "tail."*
+
+# Function to simulate draws and calculate average difference
+simulate_avg_difference <- function(sample_size, num_simulations) {
+  avg_differences <- numeric(num_simulations)
+  for (i in 1:num_simulations) {
+    control_draws <- rnorm(sample_size, mean = control_mean, sd = control_sd)
+    treatment_draws <- rnorm(sample_size, mean = treatment_mean, sd = treatment_sd)
+    avg_differences[i] <- mean(treatment_draws - control_draws)
+  }
+  return(avg_differences)
+}
+
+# Sample sizes
+sample_sizes <- c(50, 200, 500, 1000)
+
+# Number of simulations
+num_simulations <- 1000
+
+# Plot histograms for each sample size
+par(mfrow = c(2, 2))  # Arrange plots in 2x2 grid
+for (size in sample_sizes) {
+  avg_differences <- simulate_avg_difference(size, num_simulations)
+  hist(avg_differences, main = paste("Sample Size:", size), xlab = "Average Difference", col = "skyblue", breaks = 30, xlim = c(0, 0.7))
+}
+```
 

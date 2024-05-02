@@ -1,6 +1,0 @@
----
-title: "Resume"
-editor: visual
----
-
-{{< pdf resume.pdf width=100% height=800 >}}
