@@ -1,0 +1,325 @@
+---
+title: "Key Drivers Analysis"
+author: "Your Name"
+date: today
+---
+
+
+This post implements a few measure of variable importance, interpreted as a key drivers analysis, for certain aspects of a payment card on customer satisfaction with that payment card.
+
+```{r include=FALSE}
+
+# Install necessary packages if not already installed
+required_packages <- c("tidyverse", "car", "randomForest", "iml", "data.table", "MASS", "relaimpo", "caret", "e1071", "xgboost")
+
+new_packages <- required_packages[!(required_packages %in% installed.packages()[,"Package"])]
+
+if(length(new_packages)) install.packages(new_packages)
+
+# Load necessary libraries
+library(tidyverse)
+library(car)
+library(randomForest)
+library(iml)
+library(data.table)
+library(MASS)
+library(relaimpo)
+library(caret)
+library(knitr)
+library(e1071)
+library(xgboost)
+
+# Load the data
+data <- read.csv("/Users/danielgarciagomar/Documents/UCSD/MPP/Spring/Marketing Analytics/Quarto/quarto_website/projects/project4/data_for_drivers_analysis.csv")
+
+data$satisfaction <- as.factor(data$satisfaction)  # Convert the response variable to a factor
+
+# Verify the levels of the factor
+print(levels(data$satisfaction))
+
+# Display structure and first few rows to understand the data
+str(data)
+head(data)
+
+
+```
+
+```{r include=FALSE}
+# Define the response variable and predictor variables
+#response <- "satisfaction"
+#predictors <- setdiff(names(data), c("brand", "id", response))
+
+# Calculate Pearson correlations
+#correlations <- sapply(predictors, function(var) cor(data[[var]], data[[response]], use = "complete.obs"))
+
+# Standardize the predictor variables and the response variable
+#standardized_data <- as.data.frame(scale(data[c(response, predictors)]))
+
+# Fit a linear regression model on standardized data
+#lm_model <- lm(as.formula(paste(response, "~", paste(predictors, collapse = " + "))), data = standardized_data)
+
+# Extract standardized regression coefficients
+#standardized_coefs <- coef(lm_model)[-1]  # Remove intercept
+
+# Calculate "usefulness" (Relative Importance using relaimpo package)
+#rel_importance <- calc.relimp(lm_model, type = "lmg")
+#usefulness <- rel_importance$lmg
+
+# Fit a random forest model
+#rf_model <- randomForest(as.formula(paste(response, "~", paste(predictors, collapse = " + "))), data = data, importance = TRUE)
+
+# Calculate the mean decrease in Gini coefficient
+#mean_decrease_gini <- importance(rf_model, type = 2)[,1]
+
+# Shapley values using the iml package
+#predictor <- Predictor$new(rf_model, data = data[predictors], y = data[[response]])
+#shapley <- Shapley$new(predictor, x.interest = data[1, predictors])
+#shapley_values <- as.data.frame(shapley$results)
+#shapley_values_summary <- shapley_values %>%
+#  group_by(feature) %>%
+#  summarize(phi = mean(phi))
+
+# Johnson's relative weights
+#relative_weights <- calc.relimp(lm_model, type = "lmg")
+#relative_weights_df <- data.table(relative_weights$lmg)
+#relative_weights_df$variable <- names(relative_weights$lmg)
+
+# Combine all results into a single data frame
+#results <- data.frame(
+#  Variable = predictors,
+#  Pearson_Correlation = correlations,
+#  Standardized_Coefficients = standardized_coefs,  
+#  Usefulness = usefulness,
+#  Mean_Decrease_Gini = mean_decrease_gini,
+#  Shapley_Values = shapley_values_summary$phi
+#)
+
+```
+
+```{r include=FALSE}
+
+# Define the response variable and predictor variables
+response <- "satisfaction"
+predictors <- setdiff(names(data), c("brand", "id", response))
+
+# Calculate Pearson correlations
+correlations <- sapply(predictors, function(var) cor(data[[var]], as.numeric(data[[response]]), use = "complete.obs"))
+correlations <- setNames(correlations, predictors)
+
+# Standardize the predictor variables
+standardized_data <- data
+standardized_data[predictors] <- scale(data[predictors])
+
+# Fit an ordinal logistic regression model
+formula <- as.formula(paste(response, "~", paste(predictors, collapse = " + ")))
+olr_model <- polr(formula, data = data, Hess = TRUE)
+
+# Extract standardized regression coefficients
+standardized_coefs <- coef(summary(olr_model))[, "Value"]
+standardized_coefs <- setNames(standardized_coefs, predictors)
+
+# Calculate relative importance (usefulness) using relaimpo package
+lm_model <- lm(as.formula(paste("as.numeric(satisfaction) ~", paste(predictors, collapse = " + "))), data = standardized_data)
+rel_importance <- calc.relimp(lm_model, type = "lmg")
+usefulness <- rel_importance$lmg
+usefulness <- setNames(usefulness, predictors)
+
+# Hyperparameter tuning for random forest model
+control <- trainControl(method="cv", number=5)
+tunegrid <- expand.grid(.mtry=c(2, 4, 6, 8, 10))
+rf_tuned <- train(as.formula(paste(response, "~", paste(predictors, collapse = " + "))),
+                  data=data, method="rf", trControl=control, tuneGrid=tunegrid)
+
+# Best model
+best_rf_model <- rf_tuned$finalModel
+
+# Fit the best random forest model
+rf_model <- randomForest(as.formula(paste(response, "~", paste(predictors, collapse = " + "))),
+                         data = data, mtry = best_rf_model$mtry, ntree = 500, importance = TRUE)
+
+# Calculate the mean decrease in Gini coefficient
+mean_decrease_gini <- importance(rf_model, type = 2)[,1]
+mean_decrease_gini <- setNames(mean_decrease_gini, predictors)
+
+# Plot model performance
+plot(rf_model)
+
+# Plot mean decrease in Gini
+varImpPlot(rf_model)
+
+# Display mean decrease in Gini
+print(importance(rf_model))
+
+# Shapley values using the iml package
+predictor <- Predictor$new(rf_model, data = data[predictors], y = as.numeric(data[[response]]))
+shapley <- Shapley$new(predictor, x.interest = data[1, predictors])
+shapley_values <- as.data.frame(shapley$results)
+shapley_values_summary <- shapley_values %>%
+  group_by(feature) %>%
+  summarize(phi = mean(phi), .groups = 'drop')
+
+shapley_values_vector <- setNames(shapley_values_summary$phi, shapley_values_summary$feature)
+
+# Ensure all components have matching lengths
+print(length(predictors))                    # Should be the number of predictors
+print(length(correlations))                  # Should match the number of predictors
+print(length(standardized_coefs))            # Should match the number of predictors
+print(length(usefulness))                    # Should match the number of predictors
+print(length(mean_decrease_gini))            # Should match the number of predictors
+print(length(shapley_values_vector))         # Should match the number of predictors
+
+# Combine all results into a single data frame
+#results <- data.frame(
+#  Variable = predictors,
+#  Usefulness = usefulness, 
+#  Mean_Decrease_Gini = mean_decrease_gini, 
+#  Shapley_Values = shapley_values_vector[predictors],
+  
+#  Standardized_Coefficients = standardized_coefs,
+#  Pearson_Correlation = correlations
+#)
+
+
+```
+
+```{r include=FALSE}
+# Identify common predictors across all metrics
+common_predictors <- intersect(intersect(intersect(intersect(
+  names(correlations), names(standardized_coefs)), names(usefulness)),
+  names(mean_decrease_gini)), names(shapley_values_vector))
+
+# Subset all metrics to common predictors
+correlations <- correlations[common_predictors]
+standardized_coefs <- standardized_coefs[common_predictors]
+usefulness <- usefulness[common_predictors]
+mean_decrease_gini <- mean_decrease_gini[common_predictors]
+shapley_values_vector <- shapley_values_vector[common_predictors]
+
+# Combine all results into a single data frame
+results <- data.frame(
+  Usefulness = usefulness, 
+  Mean_Decrease_Gini = mean_decrease_gini, 
+  Shapley_Values = shapley_values_vector,
+  Standardized_Coefficients = standardized_coefs,
+  Pearson_Correlation = correlations
+)
+```
+
+
+```{r echo=FALSE}
+# Plot model performance
+plot(rf_model)
+```
+
+```{r echo=FALSE}
+# Plot mean decrease in Gini
+varImpPlot(rf_model)
+```
+
+```{r include=FALSE}
+# Display mean decrease in Gini
+print(importance(rf_model))
+```
+
+
+```{r echo=FALSE}
+# Display the results in a table
+kable(results, caption = "Driver Analysis Results")
+```
+
+The analysis of the dataset aimed to identify the key drivers of customer satisfaction using various statistical and machine learning techniques. The predictors included trust, build, differs, easy, appealing, rewarding, popular, service, and impact. Among these, trust and impact emerged as the most significant predictors across multiple metrics. Trust showed the highest Pearson correlation (0.2557) and a strong standardized coefficient (0.4232), indicating a robust linear relationship and significant influence on satisfaction. Impact also demonstrated high importance with the highest standardized coefficient (0.5542) and the highest mean decrease in Gini (25.3324) from the random forest model, underscoring its critical role in reducing model uncertainty. In terms of usefulness, which measures relative contribution to model performance, impact (0.0236) and trust (0.0216) again ranked highest. Conversely, predictors such as popular, rewarding, and build showed relatively lower importance across all metrics. 
+
+Interestingly, the Shapley values, intended to measure the average marginal contribution of each predictor, were zero for all variables, suggesting potential issues with the model's complexity or the data quality. This anomaly indicates the need for further investigation into the Shapley value calculation or the model's capability to capture predictor contributions. Overall, trust and impact consistently stood out as the primary drivers of customer satisfaction in the dataset, highlighting areas where strategic improvements could be most beneficial
+
+```{r include=FALSE}
+# Define the response variable and predictor variables
+response <- "satisfaction"
+predictors <- setdiff(names(data), c("brand", "id", response))
+
+# Calculate Pearson correlations
+correlations <- sapply(predictors, function(var) cor(data[[var]], as.numeric(data[[response]]), use = "complete.obs"))
+correlations <- setNames(correlations, predictors)
+
+# Standardize the predictor variables
+standardized_data <- data
+standardized_data[predictors] <- scale(data[predictors])
+
+# Fit an ordinal logistic regression model
+formula <- as.formula(paste(response, "~", paste(predictors, collapse = " + ")))
+olr_model <- polr(formula, data = data, Hess = TRUE)
+
+# Extract standardized regression coefficients
+standardized_coefs <- coef(summary(olr_model))[, "Value"]
+standardized_coefs <- setNames(standardized_coefs, predictors)
+
+# Calculate relative importance (usefulness) using relaimpo package
+lm_model <- lm(as.formula(paste("as.numeric(satisfaction) ~", paste(predictors, collapse = " + "))), data = standardized_data)
+rel_importance <- calc.relimp(lm_model, type = "lmg")
+usefulness <- rel_importance$lmg
+usefulness <- setNames(usefulness, predictors)
+
+# Hyperparameter tuning for random forest model
+control <- trainControl(method="cv", number=5)
+tunegrid <- expand.grid(.mtry=c(2, 4, 6, 8, 10))
+rf_tuned <- train(as.formula(paste(response, "~", paste(predictors, collapse = " + "))),
+                  data=data, method="rf", trControl=control, tuneGrid=tunegrid)
+
+# Best model
+best_rf_model <- rf_tuned$finalModel
+
+# Fit the best random forest model
+rf_model <- randomForest(as.formula(paste(response, "~", paste(predictors, collapse = " + "))),
+                         data = data, mtry = best_rf_model$mtry, ntree = 500, importance = TRUE)
+
+# Calculate the mean decrease in Gini coefficient
+mean_decrease_gini <- importance(rf_model, type = 2)[,1]
+mean_decrease_gini <- setNames(mean_decrease_gini, predictors)
+
+# Train an XGBoost model
+dtrain <- xgb.DMatrix(data = as.matrix(data[predictors]), label = as.numeric(data[[response]]))
+xgb_model <- xgboost(data = dtrain, max.depth = 6, eta = 0.1, nrounds = 100, objective = "reg:squarederror", verbose = 0)
+
+# Extract feature importance from XGBoost model
+xgb_importance <- xgb.importance(model = xgb_model)
+xgb_importance_scores <- xgb_importance$Gain
+names(xgb_importance_scores) <- xgb_importance$Feature
+
+# Shapley values using the iml package
+predictor <- Predictor$new(rf_model, data = data[predictors], y = as.numeric(data[[response]]))
+shapley <- Shapley$new(predictor, x.interest = data[1, predictors])
+shapley_values <- as.data.frame(shapley$results)
+shapley_values_summary <- shapley_values %>%
+  group_by(feature) %>%
+  summarize(phi = mean(phi), .groups = 'drop')
+
+shapley_values_vector <- setNames(shapley_values_summary$phi, shapley_values_summary$feature)
+
+# Ensure all components have matching lengths
+print(length(predictors))                    # Should be the number of predictors
+print(length(correlations))                  # Should match the number of predictors
+print(length(standardized_coefs))            # Should match the number of predictors
+print(length(usefulness))                    # Should match the number of predictors
+print(length(mean_decrease_gini))            # Should match the number of predictors
+print(length(shapley_values_vector))         # Should match the number of predictors
+print(length(xgb_importance_scores))         # Should match the number of predictors
+
+# Combine all results into a single data frame
+results2 <- data.frame(
+##  Pearson_Correlation = correlations,
+#  Standardized_Coefficients = standardized_coefs,  
+  XGBoost_Importance = xgb_importance_scores[predictors]
+)
+```
+
+
+```{r echo=FALSE}
+# Display the results in a table
+kable(results2, caption = "Driver Analysis Results")
+```
+
+The XGBoost model further confirmed these findings, with trust (0.2794) and impact (0.1713) having the highest importance scores, reinforcing their critical roles in influencing customer satisfaction. 
+
+
+
+
+
