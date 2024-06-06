@@ -1,0 +1,256 @@
+---
+title: "Segmentation Methods"
+author: "Daniel Gomar"
+date: today
+---
+
+
+## K-Means
+
+```{r include=FALSE}
+#_todo: write your own code to implement the k-means algorithm.  Make plots of the various steps the algorithm takes so you can "see" the algorithm working.  Test your algorithm on either the Iris or PalmerPenguins datasets.  Compare your results to the built-in `kmeans` function in R or Python._
+
+```
+
+
+```{r include=FALSE}
+# Load necessary libraries
+library(ggplot2)
+library(dplyr)
+library(cluster)
+
+# Load the Iris dataset
+iris_data <- read.csv("/Users/danielgarciagomar/Documents/UCSD/MPP/Spring/Marketing Analytics/Quarto/quarto_website/projects/project5/iris.csv")
+
+```
+
+```{r include=FALSE}
+
+# Function to implement k-means algorithm from scratch
+kmeans_custom <- function(data, centers, max_iter = 100) {
+  num_samples <- nrow(data)
+  num_clusters <- nrow(centers)
+  
+  # Store the cluster assignment for each sample
+  clusters <- rep(0, num_samples)
+  
+  # Store the history of centers and assignments for visualization
+  centers_history <- list()
+  clusters_history <- list()
+  
+  for (i in 1:max_iter) {
+    # Step 1: Assign clusters
+    for (j in 1:num_samples) {
+      distances <- apply(centers, 1, function(center) sum((data[j,] - center)^2))
+      clusters[j] <- which.min(distances)
+    }
+    
+    # Step 2: Update centers
+    new_centers <- centers
+    for (k in 1:num_clusters) {
+      cluster_data <- data[clusters == k, ]
+      if (nrow(cluster_data) > 0) {
+        new_centers[k, ] <- colMeans(cluster_data)
+      }
+    }
+    
+    # Store the centers and assignments for visualization
+    centers_history[[i]] <- centers
+    clusters_history[[i]] <- clusters
+    
+    # Check for convergence
+    if (all(new_centers == centers)) {
+      break
+    }
+    
+    centers <- new_centers
+  }
+  
+  return(list(centers = centers, clusters = clusters, centers_history = centers_history, clusters_history = clusters_history))
+}
+
+```
+
+The data preparation step involves selecting only the numerical columns from the Iris dataset, specifically the first four columns, which contain the measurements of the flower attributes (Sepal Length, Sepal Width, Petal Length, Petal Width). This subset is stored in the variable data. Next, the initial centers for the k-means algorithm are determined by randomly selecting 'k' samples from the dataset. The seed is set to 42 to ensure reproducibility, and 'k' is chosen to be 3, reflecting the desired number of clusters. These initial centers are used to run the custom k-means algorithm.
+
+The function plot_kmeans_steps is defined to visualize the steps of the k-means algorithm. It takes the dataset, the history of cluster centers, and the history of cluster assignments as inputs. The function iterates through the recorded steps of the algorithm. For each step, it creates a plot showing the data points colored by their cluster assignments and the cluster centers marked distinctly. The plot is titled with the corresponding step number, allowing for a clear visualization of the algorithm's progress over iterations.
+
+Finally, the visualization function plot_kmeans_steps is called with the data and the histories of the centers and clusters obtained from running the custom k-means algorithm. This produces a series of plots that illustrate how the clusters and their centers evolve at each iteration, providing a detailed view of the algorithm's operation
+
+To compare the results of the custom k-means algorithm with the built-in kmeans function in R, we first set the seed to 42 to ensure reproducibility. We then run the kmeans function on the dataset with 'k' set to 3, matching the number of clusters used in the custom implementation. The results of the kmeans function, including the cluster assignments and the final cluster centers, are stored in the variable kmeans_result.
+
+Next, the data is prepared for visualization. The dataset is converted to a data frame, and a new column Cluster is added to indicate the cluster assignment for each data point as determined by the kmeans function. Similarly, the cluster centers are converted to a data frame, with an additional Cluster column to identify each center.
+
+Using ggplot2, a scatter plot is created to visualize the clustering results. The data points are plotted with colors corresponding to their cluster assignments, and the cluster centers are highlighted with a different shape and size for clear distinction. The plot is titled "Built-in kmeans result," providing a direct visual comparison of the clustering outcome from the built-in kmeans function against the custom algorithm implementation.
+
+```{r include=FALSE}
+# Prepare the data (only using numerical columns)
+data <- iris_data[, 1:4]
+
+# Initialize centers (randomly select k samples from the data)
+set.seed(42)
+k <- 3
+initial_centers <- data[sample(1:nrow(data), k), ]
+
+# Run the custom k-means algorithm
+result <- kmeans_custom(data, initial_centers)
+
+# Plotting function to visualize the algorithm steps
+plot_kmeans_steps <- function(data, centers_history, clusters_history) {
+  num_steps <- length(centers_history)
+  
+  for (i in 1:num_steps) {
+    plot_data <- as.data.frame(data)
+    plot_data$Cluster <- factor(clusters_history[[i]])
+    
+    plot_centers <- as.data.frame(centers_history[[i]])
+    plot_centers$Cluster <- factor(1:nrow(plot_centers))
+    
+    p <- ggplot(plot_data, aes(x = Sepal.Length, y = Sepal.Width, color = Cluster)) +
+      geom_point(size = 2) +
+      geom_point(data = plot_centers, aes(x = Sepal.Length, y = Sepal.Width), size = 4, shape = 8) +
+      ggtitle(paste("Step", i))
+    
+    print(p)
+  }
+}
+```
+
+```{r echo=FALSE}
+# Visualize the steps of the custom k-means algorithm
+plot_kmeans_steps(data, result$centers_history, result$clusters_history)
+```
+
+
+```{r include=FALSE}
+# Compare with the built-in kmeans function
+set.seed(42)
+kmeans_result <- kmeans(data, centers = k)
+
+# Visualize the built-in kmeans results
+plot_data <- as.data.frame(data)
+plot_data$Cluster <- factor(kmeans_result$cluster)
+
+plot_centers <- as.data.frame(kmeans_result$centers)
+plot_centers$Cluster <- factor(1:nrow(plot_centers))
+
+p <- ggplot(plot_data, aes(x = Sepal.Length, y = Sepal.Width, color = Cluster)) +
+  geom_point(size = 2) +
+  geom_point(data = plot_centers, aes(x = Sepal.Length, y = Sepal.Width), size = 4, shape = 8) +
+  ggtitle("Built-in kmeans result")
+```
+
+
+```{r echo=FALSE}
+print(p)
+```
+
+## Within-cluster-sum-of-squares and silhouette scores
+
+The first step in this code involves preparing the data by selecting only the numerical columns from the Iris dataset, specifically the first four columns which contain the measurements of the flower attributes (Sepal Length, Sepal Width, Petal Length, Petal Width). This subset is stored in the variable data.
+
+Two functions are defined to evaluate clustering performance: calculate_wcss and calculate_silhouette_score. The calculate_wcss function computes the Within-Cluster Sum of Squares (WCSS) for a given number of clusters 'k'. It performs k-means clustering on the dataset and returns the sum of the within-cluster variances. The calculate_silhouette_score function computes the average silhouette score for a given number of clusters 'k'. It uses the silhouette function from the cluster package to calculate the silhouette width for each data point and returns the average silhouette score across all points.
+
+To analyze how these metrics vary with different numbers of clusters, vectors are initialized to store the WCSS values and silhouette scores for a range of cluster counts from 2 to 7. A loop iterates over this range, calling the calculate_wcss and calculate_silhouette_score functions for each value of 'k', and storing the results in the corresponding vectors.
+
+Finally, the code generates a plot to visualize the relationship between the number of clusters and the WCSS. Using ggplot2, a line plot with points is created, where the x-axis represents the number of clusters and the y-axis represents the WCSS. The plot is titled "WCSS vs Number of Clusters," providing a clear visualization of how the WCSS changes as the number of clusters increases, which can help in determining the optimal number of clusters through the "elbow method."
+
+```{r include=FALSE}
+# Prepare the data (only using numerical columns)
+data <- iris_data[, 1:4]
+
+# Function to calculate WCSS
+calculate_wcss <- function(data, k) {
+  kmeans_result <- kmeans(data, centers = k)
+  return(sum(kmeans_result$withinss))
+}
+
+# Function to calculate average silhouette score
+calculate_silhouette_score <- function(data, k) {
+  kmeans_result <- kmeans(data, centers = k)
+  silhouette_score <- silhouette(kmeans_result$cluster, dist(data))
+  return(mean(silhouette_score[, 3]))
+}
+
+# Initialize vectors to store results
+k_values <- 2:7
+wcss_values <- numeric(length(k_values))
+silhouette_scores <- numeric(length(k_values))
+
+# Calculate WCSS and silhouette scores for different values of k
+for (i in seq_along(k_values)) {
+  k <- k_values[i]
+  wcss_values[i] <- calculate_wcss(data, k)
+  silhouette_scores[i] <- calculate_silhouette_score(data, k)
+}
+
+```
+
+```{r include=FALSE}
+# Plot WCSS vs number of clusters
+wcss_plot <- ggplot(data = data.frame(k = k_values, wcss = wcss_values), aes(x = k, y = wcss)) +
+  geom_line() +
+  geom_point() +
+  ggtitle("WCSS vs Number of Clusters") +
+  xlab("Number of Clusters (k)") +
+  ylab("WCSS")
+
+```
+
+```{r echo=FALSE}
+print(wcss_plot)
+```
+
+
+```{r include=FALSE}
+# Plot Silhouette Score vs number of clusters
+silhouette_plot <- ggplot(data = data.frame(k = k_values, silhouette = silhouette_scores), aes(x = k, y = silhouette)) +
+  geom_line() +
+  geom_point() +
+  ggtitle("Silhouette Score vs Number of Clusters") +
+  xlab("Number of Clusters (k)") +
+  ylab("Average Silhouette Score")
+
+```
+
+The next graph contains code that aims to visualize the relationship between the number of clusters and the average silhouette score, which is a measure of how similar each point is to its own cluster compared to other clusters. The silhouette scores for different values of 'k' (the number of clusters) have been calculated previously and stored in the silhouette_scores vector, with the corresponding cluster counts stored in the k_values vector.
+
+To create the plot, the ggplot2 package is used. The data is organized into a data frame containing the number of clusters (k) and the corresponding average silhouette scores (silhouette). Using ggplot, a line plot with points is generated, where the x-axis represents the number of clusters and the y-axis represents the average silhouette score. The plot is titled "Silhouette Score vs Number of Clusters," providing a clear visualization of how the average silhouette score changes as the number of clusters varies. This visualization helps in identifying the optimal number of clusters by locating the peak silhouette score, indicating the best cluster configuration.
+
+```{r echo=FALSE}
+print(silhouette_plot)
+```
+
+To determine the optimal number of clusters, the code evaluates two metrics: the Within-Cluster Sum of Squares (WCSS) and the average silhouette score. The k_values vector contains the different cluster counts that were evaluated, while the wcss_values and silhouette_scores vectors hold the corresponding WCSS and silhouette scores, respectively.
+
+The optimal number of clusters based on the WCSS is identified by finding the index of the minimum WCSS value in the wcss_values vector. This index is then used to select the corresponding number of clusters from the k_values vector, and the result is stored in the variable optimal_k_wcss.
+
+Similarly, the optimal number of clusters based on the silhouette score is determined by finding the index of the maximum silhouette score in the silhouette_scores vector. The corresponding number of clusters from the k_values vector is selected and stored in the variable optimal_k_silhouette.
+
+Finally, a list is created to return both optimal cluster counts: optimal_k_wcss and optimal_k_silhouette. This provides a clear and concise summary of the optimal number of clusters according to both evaluation metrics, facilitating the decision-making process for choosing the best cluster configuration
+
+```{r echo=FALSE}
+# Determine optimal number of clusters
+optimal_k_wcss <- k_values[which.min(wcss_values)]
+optimal_k_silhouette <- k_values[which.max(silhouette_scores)]
+
+list(optimal_k_wcss = optimal_k_wcss, optimal_k_silhouette = optimal_k_silhouette)
+```
+
+```{r include=FALSE}
+
+## Latent-Class MNL
+
+
+#_todo: Use the Yogurt dataset from HW3 to estimate a latent-class MNL model.  This model was formally introduced in the paper by Kamakura & Russell (1989), which you may want to read or reference. Compare the results to the standard (aggregate) MNL model from HW3.  What are the differences in the parameter estimates?_
+
+#_todo: Fit the latent-class MNL model with 2, 3, ..., K classes. How many classes are suggested by the BIC?  The Bayesian-Schwarz Information Criterion [link](https://en.wikipedia.org/wiki/Bayesian_information_criterion) is a metric that assess the benefit of a better log likelihood at the expense of additional parameters to estimate -- akin to the adjusted R-squared for the linear regression model. Note, however, that a lower BIC indicates a better model fit, accounting for the number of parameters in the model._
+
+```
+
+
+
+
+
+
+

@@ -6,8 +6,10 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
+<meta name="author" content="Daniel Gomar">
+<meta name="dcterms.date" content="2024-06-05">
 
-<title>Daniel Gomar - Projects</title>
+<title>Daniel Gomar - Segmentation Methods</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -23,24 +25,22 @@ ul.task-list li input[type="checkbox"] {
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../">
+<script src="../../site_libs/quarto-html/quarto.js"></script>
+<script src="../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -68,67 +68,9 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
 
-    const options = {
-      valueNames: ['listing-title','listing-author','listing-date','listing-image','listing-description',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-title","listing-author","listing-date","listing-image","listing-description"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
-
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -138,7 +80,7 @@ window.Quarto = {
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../../index.html">
     <span class="navbar-title">Daniel Gomar</span>
     </a>
   </div>
@@ -149,11 +91,11 @@ window.Quarto = {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="../../index.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./projects.html" aria-current="page"> 
+    <a class="nav-link" href="../../projects.html"> 
 <span class="menu-text">Projects</span></a>
   </li>  
 </ul>
@@ -168,21 +110,40 @@ window.Quarto = {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#k-means" id="toc-k-means" class="nav-link active" data-scroll-target="#k-means">K-Means</a></li>
+  <li><a href="#within-cluster-sum-of-squares-and-silhouette-scores" id="toc-within-cluster-sum-of-squares-and-silhouette-scores" class="nav-link" data-scroll-target="#within-cluster-sum-of-squares-and-silhouette-scores">Within-cluster-sum-of-squares and silhouette scores</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Projects</h1>
+<h1 class="title">Segmentation Methods</h1>
 </div>
 
 
 
 <div class="quarto-title-meta">
 
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>Daniel Gomar </p>
+          </div>
+  </div>
     
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">June 5, 2024</p>
+    </div>
+  </div>
   
     
   </div>
@@ -192,132 +153,147 @@ window.Quarto = {
 </header>
 
 
+<section id="k-means" class="level2">
+<h2 class="anchored" data-anchor-id="k-means">K-Means</h2>
+<p>The data preparation step involves selecting only the numerical columns from the Iris dataset, specifically the first four columns, which contain the measurements of the flower attributes (Sepal Length, Sepal Width, Petal Length, Petal Width). This subset is stored in the variable data. Next, the initial centers for the k-means algorithm are determined by randomly selecting ‘k’ samples from the dataset. The seed is set to 42 to ensure reproducibility, and ‘k’ is chosen to be 3, reflecting the desired number of clusters. These initial centers are used to run the custom k-means algorithm.</p>
+<p>The function plot_kmeans_steps is defined to visualize the steps of the k-means algorithm. It takes the dataset, the history of cluster centers, and the history of cluster assignments as inputs. The function iterates through the recorded steps of the algorithm. For each step, it creates a plot showing the data points colored by their cluster assignments and the cluster centers marked distinctly. The plot is titled with the corresponding step number, allowing for a clear visualization of the algorithm’s progress over iterations.</p>
+<p>Finally, the visualization function plot_kmeans_steps is called with the data and the histories of the centers and clusters obtained from running the custom k-means algorithm. This produces a series of plots that illustrate how the clusters and their centers evolve at each iteration, providing a detailed view of the algorithm’s operation</p>
+<p>To compare the results of the custom k-means algorithm with the built-in kmeans function in R, we first set the seed to 42 to ensure reproducibility. We then run the kmeans function on the dataset with ‘k’ set to 3, matching the number of clusters used in the custom implementation. The results of the kmeans function, including the cluster assignments and the final cluster centers, are stored in the variable kmeans_result.</p>
+<p>Next, the data is prepared for visualization. The dataset is converted to a data frame, and a new column Cluster is added to indicate the cluster assignment for each data point as determined by the kmeans function. Similarly, the cluster centers are converted to a data frame, with an additional Cluster column to identify each center.</p>
+<p>Using ggplot2, a scatter plot is created to visualize the clustering results. The data points are plotted with colors corresponding to their cluster assignments, and the cluster centers are highlighted with a different shape and size for clear distinction. The plot is titled “Built-in kmeans result,” providing a direct visual comparison of the clustering outcome from the built-in kmeans function against the custom algorithm implementation.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-7.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-8.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-9.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-10.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-5-11.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-7-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="within-cluster-sum-of-squares-and-silhouette-scores" class="level2">
+<h2 class="anchored" data-anchor-id="within-cluster-sum-of-squares-and-silhouette-scores">Within-cluster-sum-of-squares and silhouette scores</h2>
+<p>The first step in this code involves preparing the data by selecting only the numerical columns from the Iris dataset, specifically the first four columns which contain the measurements of the flower attributes (Sepal Length, Sepal Width, Petal Length, Petal Width). This subset is stored in the variable data.</p>
+<p>Two functions are defined to evaluate clustering performance: calculate_wcss and calculate_silhouette_score. The calculate_wcss function computes the Within-Cluster Sum of Squares (WCSS) for a given number of clusters ‘k’. It performs k-means clustering on the dataset and returns the sum of the within-cluster variances. The calculate_silhouette_score function computes the average silhouette score for a given number of clusters ‘k’. It uses the silhouette function from the cluster package to calculate the silhouette width for each data point and returns the average silhouette score across all points.</p>
+<p>To analyze how these metrics vary with different numbers of clusters, vectors are initialized to store the WCSS values and silhouette scores for a range of cluster counts from 2 to 7. A loop iterates over this range, calling the calculate_wcss and calculate_silhouette_score functions for each value of ‘k’, and storing the results in the corresponding vectors.</p>
+<p>Finally, the code generates a plot to visualize the relationship between the number of clusters and the WCSS. Using ggplot2, a line plot with points is created, where the x-axis represents the number of clusters and the y-axis represents the WCSS. The plot is titled “WCSS vs Number of Clusters,” providing a clear visualization of how the WCSS changes as the number of clusters increases, which can help in determining the optimal number of clusters through the “elbow method.”</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-10-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>The next graph contains code that aims to visualize the relationship between the number of clusters and the average silhouette score, which is a measure of how similar each point is to its own cluster compared to other clusters. The silhouette scores for different values of ‘k’ (the number of clusters) have been calculated previously and stored in the silhouette_scores vector, with the corresponding cluster counts stored in the k_values vector.</p>
+<p>To create the plot, the ggplot2 package is used. The data is organized into a data frame containing the number of clusters (k) and the corresponding average silhouette scores (silhouette). Using ggplot, a line plot with points is generated, where the x-axis represents the number of clusters and the y-axis represents the average silhouette score. The plot is titled “Silhouette Score vs Number of Clusters,” providing a clear visualization of how the average silhouette score changes as the number of clusters varies. This visualization helps in identifying the optimal number of clusters by locating the peak silhouette score, indicating the best cluster configuration.</p>
+<div class="cell">
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="hw5_questions_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+<p>To determine the optimal number of clusters, the code evaluates two metrics: the Within-Cluster Sum of Squares (WCSS) and the average silhouette score. The k_values vector contains the different cluster counts that were evaluated, while the wcss_values and silhouette_scores vectors hold the corresponding WCSS and silhouette scores, respectively.</p>
+<p>The optimal number of clusters based on the WCSS is identified by finding the index of the minimum WCSS value in the wcss_values vector. This index is then used to select the corresponding number of clusters from the k_values vector, and the result is stored in the variable optimal_k_wcss.</p>
+<p>Similarly, the optimal number of clusters based on the silhouette score is determined by finding the index of the maximum silhouette score in the silhouette_scores vector. The corresponding number of clusters from the k_values vector is selected and stored in the variable optimal_k_silhouette.</p>
+<p>Finally, a list is created to return both optimal cluster counts: optimal_k_wcss and optimal_k_silhouette. This provides a clear and concise summary of the optimal number of clusters according to both evaluation metrics, facilitating the decision-making process for choosing the best cluster configuration</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>$optimal_k_wcss
+[1] 7
+
+$optimal_k_silhouette
+[1] 2</code></pre>
+</div>
+</div>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-grid" id="listing-listing">
-<div class="list grid quarto-listing-cols-3">
-<div class="g-col-1" data-index="0" data-listing-date-sort="1717570800000" data-listing-file-modified-sort="1714615020800" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="35" data-listing-word-count-sort="6866">
-<a href="./projects/project1/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="projects/project1/index_files/figure-html/unnamed-chunk-4-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-A Replication of Karlan and List (2007)
-</h5>
-<div class="card-text listing-description">
-Dean Karlan at Yale and John List at the University of Chicago conducted a field experiment to test the effectiveness of different fundraising letters. They sent out 50,000…<em></em>
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Daniel Garcia
-</div>
-<div class="listing-date">
-Jun 5, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="1" data-listing-date-sort="1717570800000" data-listing-file-modified-sort="1717133425008" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="8" data-listing-word-count-sort="1522">
-<a href="./projects/project4/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="projects/project4/index_files/figure-html/unnamed-chunk-5-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Key Drivers Analysis
-</h5>
-<div class="card-text listing-description">
-This post implements a few measure of variable importance, interpreted as a key drivers analysis, for certain aspects of a payment card on customer satisfaction with that…
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Daniel Gomar
-</div>
-<div class="listing-date">
-Jun 5, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="2" data-listing-date-sort="1717570800000" data-listing-file-modified-sort="1715911712525" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="19" data-listing-word-count-sort="3667">
-<a href="./projects/project3/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="projects/project3/index_files/figure-html/unnamed-chunk-13-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Multinomial Logit Examples
-</h5>
-<div class="card-text listing-description">
-This assignment uses uses the MNL model to analyze (1) yogurt purchase data made by consumers at a retail location, and (2) conjoint data about consumer preferences for…
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Daniel Gomar
-</div>
-<div class="listing-date">
-Jun 5, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="3" data-listing-date-sort="1717570800000" data-listing-file-modified-sort="1714614902135" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="20" data-listing-word-count-sort="3919">
-<a href="./projects/project2/index.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="projects/project2/index_files/figure-html/unnamed-chunk-2-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Poisson Regression Examples
-</h5>
-<div class="card-text listing-description">
-Blueprinty is a small firm that makes software for developing blueprints specifically for submitting patent applications to the US patent office. Their marketing team would…
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Daniel Garcia
-</div>
-<div class="listing-date">
-Jun 5, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-<div class="g-col-1" data-index="4" data-listing-date-sort="1717570800000" data-listing-file-modified-sort="1717650805168" data-listing-date-modified-sort="NaN" data-listing-reading-time-sort="10" data-listing-word-count-sort="1918">
-<a href="./projects/project5/hw5_questions.html" class="quarto-grid-link">
-<div class="quarto-grid-item card h-100 card-left">
-<p class="card-img-top"><img src="projects/project5/hw5_questions_files/figure-html/unnamed-chunk-5-1.png" style="height: 150px;"  class="thumbnail-image card-img"/></p>
-<div class="card-body post-contents">
-<h5 class="no-anchor card-title listing-title">
-Segmentation Methods
-</h5>
-<div class="card-text listing-description">
-The data preparation step involves selecting only the numerical columns from the Iris dataset, specifically the first four columns, which contain the measurements of the…
-</div>
-<div class="card-attribution card-text-small justify">
-<div class="listing-author">
-Daniel Gomar
-</div>
-<div class="listing-date">
-Jun 5, 2024
-</div>
-</div>
-</div>
-</div>
-</a>
-</div>
-</div>
-<div class="listing-no-matching d-none">
-No matching items
-</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
